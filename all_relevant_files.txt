@@ -1,0 +1,1718 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"]
+}
+{
+  "name": "barbaby-fitness",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@radix-ui/react-checkbox": "^1.1.3",
+    "@radix-ui/react-radio-group": "^1.2.2",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@stripe/stripe-js": "^5.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.14.4",
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.50.0",
+    "react-router-dom": "^7.0.2",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "three": "^0.171.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@shadcn/ui": "^0.0.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/estree": "^1.0.6",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@types/three": "^0.171.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.13.0",
+    "jest": "^29.7.0",
+    "path": "^0.12.7",
+    "postcss": "^8.4.35",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^3.4.1",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "typescript": "^5.7.2",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
+// src/pages/RegistrationFlow/GymContractAndWaiver.tsx
+
+import React, { useState, useEffect, FC } from "react";
+import { useLocation, useNavigate, Location } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+
+// Interface for Plan
+export interface Plan {
+  id: string;
+  title: string;
+  duration: string;
+  price: string;
+}
+
+// Interface for Form Data
+interface FormData {
+  clientName: string;
+  signatureDate: string;
+  agreedToContract: boolean;
+  agreedToWaiver: boolean;
+}
+
+// Interface for Location State
+interface LocationState {
+  selectedPlan?: Plan;
+  formData?: FormData;
+}
+
+// Component Props (if any additional props are needed in the future)
+interface GymContractAndWaiverProps { }
+
+// Functional Component
+const GymContractAndWaiver: FC<GymContractAndWaiverProps> = () => {
+  const location: Location & { state: LocationState } = useLocation();
+  const navigate = useNavigate();
+
+  // State Variables with Proper Typing
+  const [agreedToContract, setAgreedToContract] = useState<boolean>(false);
+  const [agreedToWaiver, setAgreedToWaiver] = useState<boolean>(false);
+  const [clientName, setClientName] = useState<string>("");
+  const [signatureDate, setSignatureDate] = useState<string>("");
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // useEffect with Detailed Logging and Error Handling
+  useEffect(() => {
+    try {
+      console.log("GymContractAndWaiver - Full location state:", location.state);
+      console.log("GymContractAndWaiver - Form data:", location.state?.formData);
+      console.log("GymContractAndWaiver - Selected plan:", location.state?.selectedPlan);
+
+      const plan = location.state?.selectedPlan;
+      const formData = location.state?.formData;
+
+      if (plan) {
+        setSelectedPlan(plan);
+        console.log("GymContractAndWaiver - Selected plan set successfully:", plan);
+      } else {
+        console.error("GymContractAndWaiver - No plan found in location state");
+        setError("No plan selected. Please start from the beginning.");
+        // Add a slight delay before redirecting
+        setTimeout(() => navigate("/"), 2000);
+      }
+
+      if (formData) {
+        setClientName(formData.clientName);
+        setSignatureDate(formData.signatureDate);
+        setAgreedToContract(formData.agreedToContract);
+        setAgreedToWaiver(formData.agreedToWaiver);
+        console.log("GymContractAndWaiver - Form data set successfully:", formData);
+      }
+    } catch (err) {
+      console.error("GymContractAndWaiver - Error in useEffect:", err);
+      setError("An unexpected error occurred. Please try again.");
+    }
+  }, [location.state, navigate]);
+
+  // Handler for Agree Button with Error Handling and Logging
+  const handleAgree = () => {
+    try {
+      console.log("GymContractAndWaiver - handleAgree triggered");
+      if (!agreedToContract || !agreedToWaiver || !clientName || !signatureDate) {
+        alert("Please fill in all fields and agree to both the contract and waiver before proceeding");
+        console.warn("GymContractAndWaiver - Form submission blocked due to incomplete fields");
+        return;
+      }
+
+      const formData: FormData = {
+        clientName,
+        signatureDate,
+        agreedToContract,
+        agreedToWaiver,
+      };
+
+      console.log("GymContractAndWaiver - Navigating to payment selection with formData:", formData, "and selectedPlan:", selectedPlan);
+
+      navigate("/registration-flow/payment-selection", {
+        state: {
+          formData,
+          selectedPlan,
+        },
+      });
+    } catch (err) {
+      console.error("GymContractAndWaiver - Error in handleAgree:", err);
+      setError("Failed to proceed to payment. Please try again.");
+    }
+  };
+
+  // If there's an error, display the error UI
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="max-w-md mx-auto p-6 bg-red-600 rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">Something Went Wrong</h2>
+          <p>{error}</p>
+          <Button
+            onClick={() => {
+              console.log("GymContractAndWaiver - Redirecting to home due to error");
+              navigate("/");
+            }}
+            className="mt-4 bg-gradient-to-r from-orange-500 to-[#DB6E1E] hover:from-orange-600 hover:to-[#c25f18] text-white font-semibold py-2 px-4 rounded"
+          >
+            Go to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // If the selected plan is not yet loaded, show loading
+  if (!selectedPlan) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-3xl mx-auto py-12">
+        <Card className="bg-black/75 border-orange-500/20">
+          <CardHeader className="text-center">
+            <h2 className="text-2xl font-semibold text-orange-500">
+              Review and Sign Contract & Waiver
+            </h2>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Display Selected Plan */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#DB6E1E]">
+                Selected Plan Details
+              </h3>
+              <div className="bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <p className="text-white">Title: {selectedPlan.title}</p>
+                <p className="text-white">Duration: {selectedPlan.duration}</p>
+                <p className="text-white">Price: {selectedPlan.price}</p>
+              </div>
+            </div>
+
+            {/* Membership Agreement */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Membership Agreement
+              </h3>
+              <div className="bg-black/40 text-white p-6 rounded-lg border border-orange-500/20 space-y-4 max-h-60 overflow-y-auto">
+                <p className="text-gray-300">
+                  BARBABY FITNESS PERSONAL TRAINING AND MEMBERSHIP AGREEMENT
+
+                  This Personal Training and Membership Agreement ("Agreement") is made by and between BarBaby Fitness, LLC, owned and operated by Lige Stiner ("BarBaby Fitness" or "Trainer"), and the undersigned individual ("Client" or "Member"). By signing this Agreement, the Client acknowledges having read, understood, and agreed to all terms and conditions contained herein.
+
+                  1. SERVICES: BarBaby Fitness agrees to provide personal training services to the Client, including but not limited to, fitness assessments, personalized workout plans, and nutritional guidance.
+
+                  2. TERM: This Agreement shall commence on the date of signing and continue for the duration specified in the selected plan, unless terminated earlier as provided herein.
+
+                  3. FEES AND PAYMENT: The Client agrees to pay the fees as outlined in the selected plan. Payments are due as per the agreed-upon schedule.
+
+                  4. CANCELLATION AND REFUNDS: Cancellation policies and any applicable refunds will be as per the terms specified in the selected plan.
+
+                  5. CLIENT RESPONSIBILITIES: The Client agrees to disclose all relevant health information and to follow the Trainer's instructions regarding exercise and safety.
+
+                  6. ASSUMPTION OF RISK: The Client acknowledges that participation in a fitness program involves risks and agrees to assume full responsibility for any injuries or damages that may occur.
+
+                  7. TERMINATION: Either party may terminate this Agreement with written notice, subject to the terms specified in the selected plan.
+
+                  8. GOVERNING LAW: This Agreement shall be governed by and construed in accordance with the laws of the state where BarBaby Fitness operates.
+
+                  By signing below, the Client acknowledges having read, understood, and agreed to all terms and conditions of this Agreement.
+                </p>
+              </div>
+            </div>
+
+            {/* Waiver */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Assumption of Risk & Release of Liability
+              </h3>
+              <div className="bg-black/40 text-white p-6 rounded-lg border border-orange-500/20 space-y-4 max-h-60 overflow-y-auto">
+                <p className="text-gray-300">
+                  ASSUMPTION OF RISK & RELEASE OF LIABILITY ("Release")
+
+                  NOTE: THIS FORM MUST BE READ AND SIGNED BEFORE THE PARTICIPANT IS ALLOWED TO TAKE PART IN ANY ACTIVITIES.
+
+                  In consideration of being allowed to participate in any way in the BarBaby Fitness program, related events and activities, the undersigned acknowledges, appreciates, and agrees that:
+
+                  1. The risk of injury from the activities involved in this program is significant, including the potential for permanent paralysis and death, and while particular rules, equipment, and personal discipline may reduce this risk, the risk of serious injury does exist; and,
+
+                  2. I KNOWINGLY AND FREELY ASSUME ALL SUCH RISKS, both known and unknown, EVEN IF ARISING FROM THE NEGLIGENCE OF THE RELEASEES or others, and assume full responsibility for my participation; and,
+
+                  3. I willingly agree to comply with the stated and customary terms and conditions for participation. If, however, I observe any unusual significant hazard during my presence or participation, I will remove myself from participation and bring such to the attention of the nearest official immediately; and,
+
+                  4. I, for myself and on behalf of my heirs, assigns, personal representatives and next of kin, HEREBY RELEASE AND HOLD HARMLESS BarBaby Fitness, LLC, their officers, officials, agents, and/or employees, other participants, sponsoring agencies, sponsors, advertisers, and if applicable, owners and lessors of premises used to conduct the event ("RELEASEES"), WITH RESPECT TO ANY AND ALL INJURY, DISABILITY, DEATH, or loss or damage to person or property, WHETHER ARISING FROM THE NEGLIGENCE OF THE RELEASEES OR OTHERWISE, to the fullest extent permitted by law.
+
+                  I HAVE READ THIS RELEASE OF LIABILITY AND ASSUMPTION OF RISK AGREEMENT, FULLY UNDERSTAND ITS TERMS, UNDERSTAND THAT I HAVE GIVEN UP SUBSTANTIAL RIGHTS BY SIGNING IT, AND SIGN IT FREELY AND VOLUNTARILY WITHOUT ANY INDUCEMENT.
+                </p>
+              </div>
+            </div>
+
+            {/* Client Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Client Information
+              </h3>
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className="bg-black/40 border-orange-500/20 text-white"
+                />
+                <Input
+                  type="date"
+                  value={signatureDate}
+                  onChange={(e) => setSignatureDate(e.target.value)}
+                  className="bg-black/40 border-orange-500/20 text-white"
+                />
+              </div>
+            </div>
+
+            {/* Agreement Checkboxes */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-3 bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="agreeContract"
+                    checked={agreedToContract}
+                    onChange={(e) => setAgreedToContract(e.target.checked)}
+                    className="border-2 border-orange-500 text-white data-[state=checked]:bg-orange-500"
+                  />
+                  <Label
+                    htmlFor="agreeContract"
+                    className="text-gray-200 cursor-pointer"
+                  >
+                    I have read and agree to the Membership Agreement
+                  </Label>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="agreeWaiver"
+                    checked={agreedToWaiver}
+                    onChange={(e) => setAgreedToWaiver(e.target.checked)}
+                    className="border-2 border-orange-500 text-white data-[state=checked]:bg-orange-500"
+                  />
+                  <Label
+                    htmlFor="agreeWaiver"
+                    className="text-gray-200 cursor-pointer"
+                  >
+                    I have read and agree to the Assumption of Risk & Release of Liability
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              onClick={handleAgree}
+              disabled={!agreedToContract || !agreedToWaiver || !clientName || !signatureDate}
+              className={`w-full bg-gradient-to-r from-orange-500 to-[#DB6E1E] hover:from-orange-600 hover:to-[#c25f18] text-white font-semibold py-6 text-lg ${!agreedToContract || !agreedToWaiver || !clientName || !signatureDate
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+                }`}
+            >
+              Proceed to Payment
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+// Default Export
+export default GymContractAndWaiver;
+export * from "./ContractContent";
+export * from "./ContractForm";
+export * from "./ContractSigning";
+import { FC } from "react";
+
+export const ContractContent: FC = () => {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-bold mb-4">
+          BarBaby Fitness - Personal Training Contract
+        </h3>
+        <p className="text-gray-300 mb-4">
+          This agreement is made between BarBaby Fitness ("Trainer") and the
+          undersigned client ("Client"). By signing this contract, the Client
+          acknowledges that they have read, understood, and agreed to the terms
+          and conditions outlined below.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Program Options</h4>
+        <div className="space-y-2">
+          <p className="font-medium">Training Plans:</p>
+          <ul className="list-disc pl-6 text-gray-300 space-y-1">
+            <li>3 sessions per week: $600/month</li>
+            <li>2 sessions per week: $440/month</li>
+            <li>1 session per week: $240/month</li>
+          </ul>
+          <p className="text-gray-300">
+            A $99 enrollment fee is required for all new clients.
+          </p>
+
+          <p className="font-medium mt-4">Included Features:</p>
+          <ul className="list-disc pl-6 text-gray-300 space-y-1">
+            <li>Tailored workout plans designed to meet the Client's goals.</li>
+            <li>Progress tracking to monitor results and improvements.</li>
+            <li>Access to flexible scheduling options.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Payment Terms</h4>
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">Payment Obligations:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                Payments must be made in advance for the selected training plan.
+              </li>
+              <li>
+                Additional sessions beyond the selected plan are billed at
+                $75/session.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Refund Policy:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>The $99 enrollment fee is non-refundable.</li>
+              <li>
+                Refunds for unused sessions are not available unless under
+                exceptional circumstances.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Cancellation Policy:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                Sessions canceled with less than 24 hours' notice will not be
+                refunded.
+              </li>
+              <li>Unused sessions do not roll over to the next month.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">
+          Health and Liability Waiver
+        </h4>
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">Acknowledgment of Risk:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                The Client acknowledges that participating in physical exercise
+                involves inherent risks.
+              </li>
+              <li>
+                Clients with pre-existing conditions must consult their
+                physician before starting.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Release of Liability:</p>
+            <p className="text-gray-300 pl-6">
+              The Client agrees to release and hold harmless BarBaby Fitness,
+              its trainers, and employees from any claims, demands, and causes
+              of action arising from their participation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Client Commitments</h4>
+        <p className="text-gray-300 mb-2">The Client agrees to:</p>
+        <ul className="list-disc pl-6 text-gray-300 space-y-1">
+          <li>Show up for sessions on time and ready to participate.</li>
+          <li>
+            Actively communicate with the Trainer about any health concerns or
+            injuries.
+          </li>
+          <li>Commit to the program for the agreed duration.</li>
+          <li>
+            Follow the Trainer's guidance for achieving their fitness goals.
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+import { Button } from "@/components/ui/Button";
+import { useState } from "react";
+import { ContractContent } from "../ContractContent";
+import {
+  validateRegistrationForm,
+  handleFormError,
+  formatPhoneNumber,
+} from "../../utils";
+import { RegistrationFormData } from "@/pages/TrainingOptions/components/types";
+
+export const ContractForm: React.FC<ContractFormProps> = ({
+  selectedPlan,
+  onSubmit,
+  onBack,
+  initialData,
+}) => {
+  const [hasReadContract, setHasReadContract] = useState(false);
+  const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
+    fullName: initialData?.fullName || "",
+    email: initialData?.email || "",
+    phone: initialData?.phone || "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when field is modified
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Validate form data
+      const { isValid, errors: validationErrors } =
+        await validateRegistrationForm(formData);
+
+      if (!isValid && validationErrors) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      // Format phone number before submission
+      const formattedData = {
+        ...formData,
+        phone: formatPhoneNumber(formData.phone || ""),
+        selectedPlanId: selectedPlan?.id,
+      };
+
+      await onSubmit(formattedData);
+    } catch (error) {
+      const errorResponse = handleFormError(error);
+      setErrors({ submit: errorResponse.message });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {selectedPlan && (
+        <div className="mb-6 p-4 bg-black/20 rounded-lg">
+          <h3 className="text-lg font-semibold text-orange-500">
+            Selected Plan: {selectedPlan.title}
+          </h3>
+          <p className="text-gray-300">{selectedPlan.price}</p>
+        </div>
+      )}
+
+      <div className="mb-6">
+        <div className="bg-black/30 rounded-lg p-6">
+          <div className="max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+            <ContractContent />
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="contractAgreement"
+            checked={hasReadContract}
+            onChange={(e) => setHasReadContract(e.target.checked)}
+            className="mt-1.5"
+          />
+          <label htmlFor="contractAgreement" className="text-sm text-gray-300">
+            I have read, understood, and agree to the terms and conditions
+            outlined in this contract.
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Full Name</label>
+        <input
+          type="text"
+          name="fullName"
+          value={formData.fullName || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.fullName ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your full name"
+          required
+        />
+        {errors.fullName && (
+          <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.email ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your email"
+          required
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Phone</label>
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.phone ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your phone number"
+          required
+        />
+        {errors.phone && (
+          <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+        )}
+      </div>
+
+      {errors.submit && (
+        <div className="p-3 bg-red-500/10 border border-red-500 rounded-lg">
+          <p className="text-sm text-red-500">{errors.submit}</p>
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <Button
+          variant="solid"
+          type="submit"
+          disabled={!hasReadContract}
+          className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Sign & Continue to Payment
+        </Button>
+        <Button variant="outline" onClick={onBack} className="w-full">
+          Back to Plans
+        </Button>
+      </div>
+    </form>
+  );
+};
+// src/pages/TrainingOptions/components/RegistrationController/Contract/ContractSigning.tsx
+
+import { motion } from "framer-motion";
+import { FileText } from "lucide-react";
+import { useState } from "react";
+import { SignatureData } from "@/pages/TrainingOptions/components/types";
+
+interface ContractSigningProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  selectedPlan: {
+    title: string;
+    price: string;
+  };
+  onSubmit: (data: SignatureData) => void;
+  onBack: () => void;
+}
+
+export const ContractSigning: React.FC<ContractSigningProps> = ({
+  formData: initialFormData,
+  selectedPlan,
+  onSubmit,
+  onBack,
+}) => {
+  const [signatureData, setSignatureData] = useState<SignatureData>({
+    signature: "",
+    date: new Date().toISOString().split("T")[0],
+    acceptedTerms: false,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setSignatureData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signatureData.acceptedTerms || !signatureData.signature) return;
+    onSubmit(signatureData);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-3xl mx-auto"
+    >
+      <div className="bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800">
+        <div className="flex items-center gap-3 mb-6">
+          <FileText className="w-8 h-8 text-[#DB6E1E]" />
+          <h2 className="text-3xl font-bold">Training Agreement</h2>
+        </div>
+
+        <div className="mb-6 p-4 bg-[#DB6E1E]/10 rounded-lg">
+          <h3 className="font-semibold mb-2">
+            Selected Plan: {selectedPlan?.title}
+          </h3>
+          <p className="text-gray-300">{selectedPlan?.price}</p>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="font-semibold mb-4">Member Information</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm text-gray-300">
+            <div>
+              <p className="font-medium">Name:</p>
+              <p>
+                {initialFormData.firstName} {initialFormData.lastName}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Email:</p>
+              <p>{initialFormData.email}</p>
+            </div>
+            <div>
+              <p className="font-medium">Phone:</p>
+              <p>{initialFormData.phone}</p>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Digital Signature
+              </label>
+              <input
+                type="text"
+                name="signature"
+                value={signatureData.signature}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-black/50 rounded-lg border border-zinc-800 focus:border-orange-500 focus:outline-none"
+                placeholder="Type your full name as signature"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={signatureData.date}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-black/50 rounded-lg border border-zinc-800 focus:border-orange-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                name="acceptedTerms"
+                checked={signatureData.acceptedTerms}
+                onChange={handleChange}
+                className="rounded border-zinc-800"
+                required
+              />
+              <label className="text-sm text-gray-300">
+                I agree to the terms and conditions
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-full px-4 py-2 rounded-lg border border-zinc-800 hover:border-orange-500 transition-colors"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={
+                !signatureData.acceptedTerms || !signatureData.signature
+              }
+              className="w-full px-4 py-2 rounded-lg bg-[#DB6E1E] hover:bg-[#DB6E1E]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Continue to Payment
+            </button>
+          </div>
+        </form>
+      </div>
+    </motion.div>
+  );
+};
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"]
+}
+{
+  "name": "barbaby-fitness",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@radix-ui/react-checkbox": "^1.1.3",
+    "@radix-ui/react-radio-group": "^1.2.2",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@stripe/stripe-js": "^5.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.14.4",
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.50.0",
+    "react-router-dom": "^7.0.2",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "three": "^0.171.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@shadcn/ui": "^0.0.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/estree": "^1.0.6",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@types/three": "^0.171.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.13.0",
+    "jest": "^29.7.0",
+    "path": "^0.12.7",
+    "postcss": "^8.4.35",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^3.4.1",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "typescript": "^5.7.2",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
+// src/pages/RegistrationFlow/GymContractAndWaiver.tsx
+
+import React, { useState, useEffect, FC } from "react";
+import { useLocation, useNavigate, Location } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+
+// Interface for Plan
+export interface Plan {
+  id: string;
+  title: string;
+  duration: string;
+  price: string;
+}
+
+// Interface for Form Data
+interface FormData {
+  clientName: string;
+  signatureDate: string;
+  agreedToContract: boolean;
+  agreedToWaiver: boolean;
+}
+
+// Interface for Location State
+interface LocationState {
+  selectedPlan?: Plan;
+  formData?: FormData;
+}
+
+// Component Props (if any additional props are needed in the future)
+interface GymContractAndWaiverProps { }
+
+// Functional Component
+const GymContractAndWaiver: FC<GymContractAndWaiverProps> = () => {
+  const location: Location & { state: LocationState } = useLocation();
+  const navigate = useNavigate();
+
+  // State Variables with Proper Typing
+  const [agreedToContract, setAgreedToContract] = useState<boolean>(false);
+  const [agreedToWaiver, setAgreedToWaiver] = useState<boolean>(false);
+  const [clientName, setClientName] = useState<string>("");
+  const [signatureDate, setSignatureDate] = useState<string>("");
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // useEffect with Detailed Logging and Error Handling
+  useEffect(() => {
+    try {
+      console.log("GymContractAndWaiver - Full location state:", location.state);
+      console.log("GymContractAndWaiver - Form data:", location.state?.formData);
+      console.log("GymContractAndWaiver - Selected plan:", location.state?.selectedPlan);
+
+      const plan = location.state?.selectedPlan;
+      const formData = location.state?.formData;
+
+      if (plan) {
+        setSelectedPlan(plan);
+        console.log("GymContractAndWaiver - Selected plan set successfully:", plan);
+      } else {
+        console.error("GymContractAndWaiver - No plan found in location state");
+        setError("No plan selected. Please start from the beginning.");
+        // Add a slight delay before redirecting
+        setTimeout(() => navigate("/"), 2000);
+      }
+
+      if (formData) {
+        setClientName(formData.clientName);
+        setSignatureDate(formData.signatureDate);
+        setAgreedToContract(formData.agreedToContract);
+        setAgreedToWaiver(formData.agreedToWaiver);
+        console.log("GymContractAndWaiver - Form data set successfully:", formData);
+      }
+    } catch (err) {
+      console.error("GymContractAndWaiver - Error in useEffect:", err);
+      setError("An unexpected error occurred. Please try again.");
+    }
+  }, [location.state, navigate]);
+
+  // Handler for Agree Button with Error Handling and Logging
+  const handleAgree = () => {
+    try {
+      console.log("GymContractAndWaiver - handleAgree triggered");
+      if (!agreedToContract || !agreedToWaiver || !clientName || !signatureDate) {
+        alert("Please fill in all fields and agree to both the contract and waiver before proceeding");
+        console.warn("GymContractAndWaiver - Form submission blocked due to incomplete fields");
+        return;
+      }
+
+      const formData: FormData = {
+        clientName,
+        signatureDate,
+        agreedToContract,
+        agreedToWaiver,
+      };
+
+      console.log("GymContractAndWaiver - Navigating to payment selection with formData:", formData, "and selectedPlan:", selectedPlan);
+
+      navigate("/registration-flow/payment-selection", {
+        state: {
+          formData,
+          selectedPlan,
+        },
+      });
+    } catch (err) {
+      console.error("GymContractAndWaiver - Error in handleAgree:", err);
+      setError("Failed to proceed to payment. Please try again.");
+    }
+  };
+
+  // If there's an error, display the error UI
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="max-w-md mx-auto p-6 bg-red-600 rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">Something Went Wrong</h2>
+          <p>{error}</p>
+          <Button
+            onClick={() => {
+              console.log("GymContractAndWaiver - Redirecting to home due to error");
+              navigate("/");
+            }}
+            className="mt-4 bg-gradient-to-r from-orange-500 to-[#DB6E1E] hover:from-orange-600 hover:to-[#c25f18] text-white font-semibold py-2 px-4 rounded"
+          >
+            Go to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // If the selected plan is not yet loaded, show loading
+  if (!selectedPlan) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-3xl mx-auto py-12">
+        <Card className="bg-black/75 border-orange-500/20">
+          <CardHeader className="text-center">
+            <h2 className="text-2xl font-semibold text-orange-500">
+              Review and Sign Contract & Waiver
+            </h2>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Display Selected Plan */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#DB6E1E]">
+                Selected Plan Details
+              </h3>
+              <div className="bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <p className="text-white">Title: {selectedPlan.title}</p>
+                <p className="text-white">Duration: {selectedPlan.duration}</p>
+                <p className="text-white">Price: {selectedPlan.price}</p>
+              </div>
+            </div>
+
+            {/* Membership Agreement */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Membership Agreement
+              </h3>
+              <div className="bg-black/40 text-white p-6 rounded-lg border border-orange-500/20 space-y-4 max-h-60 overflow-y-auto">
+                <p className="text-gray-300">
+                  BARBABY FITNESS PERSONAL TRAINING AND MEMBERSHIP AGREEMENT
+
+                  This Personal Training and Membership Agreement ("Agreement") is made by and between BarBaby Fitness, LLC, owned and operated by Lige Stiner ("BarBaby Fitness" or "Trainer"), and the undersigned individual ("Client" or "Member"). By signing this Agreement, the Client acknowledges having read, understood, and agreed to all terms and conditions contained herein.
+
+                  1. SERVICES: BarBaby Fitness agrees to provide personal training services to the Client, including but not limited to, fitness assessments, personalized workout plans, and nutritional guidance.
+
+                  2. TERM: This Agreement shall commence on the date of signing and continue for the duration specified in the selected plan, unless terminated earlier as provided herein.
+
+                  3. FEES AND PAYMENT: The Client agrees to pay the fees as outlined in the selected plan. Payments are due as per the agreed-upon schedule.
+
+                  4. CANCELLATION AND REFUNDS: Cancellation policies and any applicable refunds will be as per the terms specified in the selected plan.
+
+                  5. CLIENT RESPONSIBILITIES: The Client agrees to disclose all relevant health information and to follow the Trainer's instructions regarding exercise and safety.
+
+                  6. ASSUMPTION OF RISK: The Client acknowledges that participation in a fitness program involves risks and agrees to assume full responsibility for any injuries or damages that may occur.
+
+                  7. TERMINATION: Either party may terminate this Agreement with written notice, subject to the terms specified in the selected plan.
+
+                  8. GOVERNING LAW: This Agreement shall be governed by and construed in accordance with the laws of the state where BarBaby Fitness operates.
+
+                  By signing below, the Client acknowledges having read, understood, and agreed to all terms and conditions of this Agreement.
+                </p>
+              </div>
+            </div>
+
+            {/* Waiver */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Assumption of Risk & Release of Liability
+              </h3>
+              <div className="bg-black/40 text-white p-6 rounded-lg border border-orange-500/20 space-y-4 max-h-60 overflow-y-auto">
+                <p className="text-gray-300">
+                  ASSUMPTION OF RISK & RELEASE OF LIABILITY ("Release")
+
+                  NOTE: THIS FORM MUST BE READ AND SIGNED BEFORE THE PARTICIPANT IS ALLOWED TO TAKE PART IN ANY ACTIVITIES.
+
+                  In consideration of being allowed to participate in any way in the BarBaby Fitness program, related events and activities, the undersigned acknowledges, appreciates, and agrees that:
+
+                  1. The risk of injury from the activities involved in this program is significant, including the potential for permanent paralysis and death, and while particular rules, equipment, and personal discipline may reduce this risk, the risk of serious injury does exist; and,
+
+                  2. I KNOWINGLY AND FREELY ASSUME ALL SUCH RISKS, both known and unknown, EVEN IF ARISING FROM THE NEGLIGENCE OF THE RELEASEES or others, and assume full responsibility for my participation; and,
+
+                  3. I willingly agree to comply with the stated and customary terms and conditions for participation. If, however, I observe any unusual significant hazard during my presence or participation, I will remove myself from participation and bring such to the attention of the nearest official immediately; and,
+
+                  4. I, for myself and on behalf of my heirs, assigns, personal representatives and next of kin, HEREBY RELEASE AND HOLD HARMLESS BarBaby Fitness, LLC, their officers, officials, agents, and/or employees, other participants, sponsoring agencies, sponsors, advertisers, and if applicable, owners and lessors of premises used to conduct the event ("RELEASEES"), WITH RESPECT TO ANY AND ALL INJURY, DISABILITY, DEATH, or loss or damage to person or property, WHETHER ARISING FROM THE NEGLIGENCE OF THE RELEASEES OR OTHERWISE, to the fullest extent permitted by law.
+
+                  I HAVE READ THIS RELEASE OF LIABILITY AND ASSUMPTION OF RISK AGREEMENT, FULLY UNDERSTAND ITS TERMS, UNDERSTAND THAT I HAVE GIVEN UP SUBSTANTIAL RIGHTS BY SIGNING IT, AND SIGN IT FREELY AND VOLUNTARILY WITHOUT ANY INDUCEMENT.
+                </p>
+              </div>
+            </div>
+
+            {/* Client Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-orange-500">
+                Client Information
+              </h3>
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className="bg-black/40 border-orange-500/20 text-white"
+                />
+                <Input
+                  type="date"
+                  value={signatureDate}
+                  onChange={(e) => setSignatureDate(e.target.value)}
+                  className="bg-black/40 border-orange-500/20 text-white"
+                />
+              </div>
+            </div>
+
+            {/* Agreement Checkboxes */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-3 bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="agreeContract"
+                    checked={agreedToContract}
+                    onChange={(e) => setAgreedToContract(e.target.checked)}
+                    className="border-2 border-orange-500 text-white data-[state=checked]:bg-orange-500"
+                  />
+                  <Label
+                    htmlFor="agreeContract"
+                    className="text-gray-200 cursor-pointer"
+                  >
+                    I have read and agree to the Membership Agreement
+                  </Label>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 bg-black/40 p-4 rounded-lg border border-orange-500/20">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="agreeWaiver"
+                    checked={agreedToWaiver}
+                    onChange={(e) => setAgreedToWaiver(e.target.checked)}
+                    className="border-2 border-orange-500 text-white data-[state=checked]:bg-orange-500"
+                  />
+                  <Label
+                    htmlFor="agreeWaiver"
+                    className="text-gray-200 cursor-pointer"
+                  >
+                    I have read and agree to the Assumption of Risk & Release of Liability
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              onClick={handleAgree}
+              disabled={!agreedToContract || !agreedToWaiver || !clientName || !signatureDate}
+              className={`w-full bg-gradient-to-r from-orange-500 to-[#DB6E1E] hover:from-orange-600 hover:to-[#c25f18] text-white font-semibold py-6 text-lg ${!agreedToContract || !agreedToWaiver || !clientName || !signatureDate
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+                }`}
+            >
+              Proceed to Payment
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+// Default Export
+export default GymContractAndWaiver;
+export * from "./ContractContent";
+export * from "./ContractForm";
+export * from "./ContractSigning";
+import { FC } from "react";
+
+export const ContractContent: FC = () => {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-bold mb-4">
+          BarBaby Fitness - Personal Training Contract
+        </h3>
+        <p className="text-gray-300 mb-4">
+          This agreement is made between BarBaby Fitness ("Trainer") and the
+          undersigned client ("Client"). By signing this contract, the Client
+          acknowledges that they have read, understood, and agreed to the terms
+          and conditions outlined below.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Program Options</h4>
+        <div className="space-y-2">
+          <p className="font-medium">Training Plans:</p>
+          <ul className="list-disc pl-6 text-gray-300 space-y-1">
+            <li>3 sessions per week: $600/month</li>
+            <li>2 sessions per week: $440/month</li>
+            <li>1 session per week: $240/month</li>
+          </ul>
+          <p className="text-gray-300">
+            A $99 enrollment fee is required for all new clients.
+          </p>
+
+          <p className="font-medium mt-4">Included Features:</p>
+          <ul className="list-disc pl-6 text-gray-300 space-y-1">
+            <li>Tailored workout plans designed to meet the Client's goals.</li>
+            <li>Progress tracking to monitor results and improvements.</li>
+            <li>Access to flexible scheduling options.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Payment Terms</h4>
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">Payment Obligations:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                Payments must be made in advance for the selected training plan.
+              </li>
+              <li>
+                Additional sessions beyond the selected plan are billed at
+                $75/session.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Refund Policy:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>The $99 enrollment fee is non-refundable.</li>
+              <li>
+                Refunds for unused sessions are not available unless under
+                exceptional circumstances.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Cancellation Policy:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                Sessions canceled with less than 24 hours' notice will not be
+                refunded.
+              </li>
+              <li>Unused sessions do not roll over to the next month.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">
+          Health and Liability Waiver
+        </h4>
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">Acknowledgment of Risk:</p>
+            <ul className="list-disc pl-6 text-gray-300 space-y-1">
+              <li>
+                The Client acknowledges that participating in physical exercise
+                involves inherent risks.
+              </li>
+              <li>
+                Clients with pre-existing conditions must consult their
+                physician before starting.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-medium">Release of Liability:</p>
+            <p className="text-gray-300 pl-6">
+              The Client agrees to release and hold harmless BarBaby Fitness,
+              its trainers, and employees from any claims, demands, and causes
+              of action arising from their participation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-semibold mb-3">Client Commitments</h4>
+        <p className="text-gray-300 mb-2">The Client agrees to:</p>
+        <ul className="list-disc pl-6 text-gray-300 space-y-1">
+          <li>Show up for sessions on time and ready to participate.</li>
+          <li>
+            Actively communicate with the Trainer about any health concerns or
+            injuries.
+          </li>
+          <li>Commit to the program for the agreed duration.</li>
+          <li>
+            Follow the Trainer's guidance for achieving their fitness goals.
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+import { Button } from "@/components/ui/Button";
+import { useState } from "react";
+import { ContractContent } from "../ContractContent";
+import {
+  validateRegistrationForm,
+  handleFormError,
+  formatPhoneNumber,
+} from "../../utils";
+import { RegistrationFormData } from "@/pages/TrainingOptions/components/types";
+
+export const ContractForm: React.FC<ContractFormProps> = ({
+  selectedPlan,
+  onSubmit,
+  onBack,
+  initialData,
+}) => {
+  const [hasReadContract, setHasReadContract] = useState(false);
+  const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
+    fullName: initialData?.fullName || "",
+    email: initialData?.email || "",
+    phone: initialData?.phone || "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when field is modified
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Validate form data
+      const { isValid, errors: validationErrors } =
+        await validateRegistrationForm(formData);
+
+      if (!isValid && validationErrors) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      // Format phone number before submission
+      const formattedData = {
+        ...formData,
+        phone: formatPhoneNumber(formData.phone || ""),
+        selectedPlanId: selectedPlan?.id,
+      };
+
+      await onSubmit(formattedData);
+    } catch (error) {
+      const errorResponse = handleFormError(error);
+      setErrors({ submit: errorResponse.message });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {selectedPlan && (
+        <div className="mb-6 p-4 bg-black/20 rounded-lg">
+          <h3 className="text-lg font-semibold text-orange-500">
+            Selected Plan: {selectedPlan.title}
+          </h3>
+          <p className="text-gray-300">{selectedPlan.price}</p>
+        </div>
+      )}
+
+      <div className="mb-6">
+        <div className="bg-black/30 rounded-lg p-6">
+          <div className="max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+            <ContractContent />
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="contractAgreement"
+            checked={hasReadContract}
+            onChange={(e) => setHasReadContract(e.target.checked)}
+            className="mt-1.5"
+          />
+          <label htmlFor="contractAgreement" className="text-sm text-gray-300">
+            I have read, understood, and agree to the terms and conditions
+            outlined in this contract.
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Full Name</label>
+        <input
+          type="text"
+          name="fullName"
+          value={formData.fullName || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.fullName ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your full name"
+          required
+        />
+        {errors.fullName && (
+          <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.email ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your email"
+          required
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Phone</label>
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone || ""}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 bg-black/50 rounded-lg border ${
+            errors.phone ? "border-red-500" : "border-zinc-800"
+          } focus:border-orange-500 focus:outline-none`}
+          placeholder="Enter your phone number"
+          required
+        />
+        {errors.phone && (
+          <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+        )}
+      </div>
+
+      {errors.submit && (
+        <div className="p-3 bg-red-500/10 border border-red-500 rounded-lg">
+          <p className="text-sm text-red-500">{errors.submit}</p>
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <Button
+          variant="solid"
+          type="submit"
+          disabled={!hasReadContract}
+          className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Sign & Continue to Payment
+        </Button>
+        <Button variant="outline" onClick={onBack} className="w-full">
+          Back to Plans
+        </Button>
+      </div>
+    </form>
+  );
+};
+// src/pages/TrainingOptions/components/RegistrationController/Contract/ContractSigning.tsx
+
+import { motion } from "framer-motion";
+import { FileText } from "lucide-react";
+import { useState } from "react";
+import { SignatureData } from "@/pages/TrainingOptions/components/types";
+
+interface ContractSigningProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  selectedPlan: {
+    title: string;
+    price: string;
+  };
+  onSubmit: (data: SignatureData) => void;
+  onBack: () => void;
+}
+
+export const ContractSigning: React.FC<ContractSigningProps> = ({
+  formData: initialFormData,
+  selectedPlan,
+  onSubmit,
+  onBack,
+}) => {
+  const [signatureData, setSignatureData] = useState<SignatureData>({
+    signature: "",
+    date: new Date().toISOString().split("T")[0],
+    acceptedTerms: false,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setSignatureData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signatureData.acceptedTerms || !signatureData.signature) return;
+    onSubmit(signatureData);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-3xl mx-auto"
+    >
+      <div className="bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800">
+        <div className="flex items-center gap-3 mb-6">
+          <FileText className="w-8 h-8 text-[#DB6E1E]" />
+          <h2 className="text-3xl font-bold">Training Agreement</h2>
+        </div>
+
+        <div className="mb-6 p-4 bg-[#DB6E1E]/10 rounded-lg">
+          <h3 className="font-semibold mb-2">
+            Selected Plan: {selectedPlan?.title}
+          </h3>
+          <p className="text-gray-300">{selectedPlan?.price}</p>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="font-semibold mb-4">Member Information</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm text-gray-300">
+            <div>
+              <p className="font-medium">Name:</p>
+              <p>
+                {initialFormData.firstName} {initialFormData.lastName}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Email:</p>
+              <p>{initialFormData.email}</p>
+            </div>
+            <div>
+              <p className="font-medium">Phone:</p>
+              <p>{initialFormData.phone}</p>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Digital Signature
+              </label>
+              <input
+                type="text"
+                name="signature"
+                value={signatureData.signature}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-black/50 rounded-lg border border-zinc-800 focus:border-orange-500 focus:outline-none"
+                placeholder="Type your full name as signature"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={signatureData.date}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-black/50 rounded-lg border border-zinc-800 focus:border-orange-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                name="acceptedTerms"
+                checked={signatureData.acceptedTerms}
+                onChange={handleChange}
+                className="rounded border-zinc-800"
+                required
+              />
+              <label className="text-sm text-gray-300">
+                I agree to the terms and conditions
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-full px-4 py-2 rounded-lg border border-zinc-800 hover:border-orange-500 transition-colors"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={
+                !signatureData.acceptedTerms || !signatureData.signature
+              }
+              className="w-full px-4 py-2 rounded-lg bg-[#DB6E1E] hover:bg-[#DB6E1E]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Continue to Payment
+            </button>
+          </div>
+        </form>
+      </div>
+    </motion.div>
+  );
+};

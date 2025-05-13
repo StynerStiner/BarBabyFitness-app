@@ -1,0 +1,31 @@
+{
+  "ignoreWords": [
+    "Venmo",
+    "venmo",
+    "Stiner",
+    "Lige",
+    "Barbaby",
+    "paycharge",
+    "cspell",
+    "markdownlint",
+    "markdownlintMD",
+    "txn",
+    "webOS",
+    "IEMobile",
+    "webFallbackUrl"
+  ],
+  "ignoreRegexps": [
+    "/Venmo/g",
+    "/venmo/g",
+    "/Stiner/g",
+    "/Lige/g"
+  ],
+  "ignoreFiles": [
+    "**/*.json",
+    "**/*.md",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ]
+} 

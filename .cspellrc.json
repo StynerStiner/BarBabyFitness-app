@@ -1,0 +1,23 @@
+{
+  "enabled": false,
+  "language": "en",
+  "version": "0.2",
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "Venmo",
+    "venmo",
+    "Stiner",
+    "Lige",
+    "Barbaby",
+    "paycharge"
+  ],
+  "ignoreWords": [
+    "Venmo", 
+    "venmo",
+    "Stiner",
+    "Lige",
+    "Barbaby",
+    "paycharge"
+  ]
+} 

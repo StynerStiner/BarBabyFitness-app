@@ -1,0 +1,21 @@
+// tsconfig.scripts.json
+{
+  "compilerOptions": {
+    // NodeNext is critical for .mts in ESM
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    // For modern JS features
+    "target": "ES2020",
+
+    // If you rely on old module imports
+    "esModuleInterop": true,
+
+    // Strict recommended
+    "strict": true,
+
+    // Allows importing .mts or .cts
+    "allowImportingTsExtensions": true
+  },
+  // Only compile code in src/scripts for Node
+  "include": ["src/scripts/**/*"]
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Templates Setup</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #3498db;
+      margin-top: 30px;
+    }
+    code {
+      background-color: #f8f8f8;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .file-list {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .file-list li {
+      margin-bottom: 10px;
+    }
+    .note {
+      background-color: #fffacd;
+      padding: 15px;
+      border-radius: 5px;
+      border-left: 4px solid #ffd700;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>PDF Templates Setup</h1>
+  
+  <p>This directory is for storing local copies of PDF templates for development purposes.</p>
+  
+  <h2>Required Templates</h2>
+  
+  <div class="file-list">
+    <ul>
+      <li><code>registration_form_template.pdf</code></li>
+      <li><code>training_agreement_template.pdf</code></li>
+      <li><code>liability_waiver_template.pdf</code></li>
+    </ul>
+  </div>
+  
+  <h2>How to Set Up Templates</h2>
+  
+  <p>You have two options for setting up the templates:</p>
+  
+  <h3>Option 1: Download from Cloudflare R2 (Recommended)</h3>
+  
+  <p>If you have access to the Cloudflare R2 bucket, you can use the provided script to download the templates:</p>
+  
+  <pre>npm run download-templates</pre>
+  
+  <p>This will download the templates from Cloudflare R2 and place them in this directory.</p>
+  
+  <div class="note">
+    <p><strong>Note:</strong> You need to have the correct environment variables set in your <code>.env</code> file:</p>
+    <pre>VITE_CLOUDFLARE_R2_PUBLIC_URL=https://pub-a73c1de02759402f8f74a8b93a6f48ea.r2.dev</pre>
+  </div>
+  
+  <h3>Option 2: Manual Download</h3>
+  
+  <p>If you have access to the templates from another source, you can manually download them and place them in this directory.</p>
+  
+  <h2>Why Use Local Templates?</h2>
+  
+  <p>When developing locally, direct browser requests to Cloudflare R2 will be blocked by CORS policies. Using local templates avoids these issues and allows for faster development.</p>
+  
+  <p>In production, the application will use the templates stored in Cloudflare R2.</p>
+  
+  <h2>Troubleshooting</h2>
+  
+  <p>If you're still experiencing issues with templates:</p>
+  
+  <ul>
+    <li>Make sure the file names match exactly as listed above</li>
+    <li>Verify that the files are valid PDF documents</li>
+    <li>Check that the files are placed directly in this directory (not in subdirectories)</li>
+    <li>Restart the development server after adding the templates</li>
+  </ul>
+</body>
+</html>

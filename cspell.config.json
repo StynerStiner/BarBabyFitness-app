@@ -1,0 +1,32 @@
+{
+  "version": "0.2",
+  "language": "en,en-US",
+  "allowCompoundWords": true,
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./project-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "project-words",
+    "typescript",
+    "node",
+    "npm",
+    "html",
+    "css"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "dist/**",
+    ".git/**",
+    "package-lock.json"
+  ],
+  "ignoreRegExpList": [
+    "/import\\s+.*\\s+from\\s+['\"].*['\"]/g",
+    "/export\\s+.*\\s+from\\s+['\"].*['\"]/g",
+    "/#.*/",
+    "/```[\\s\\S]*?```/"
+  ]
+} 

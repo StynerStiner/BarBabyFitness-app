@@ -1,0 +1,15 @@
+{
+  "enabled": false,
+  "language": "en",
+  "enabledLanguageIds": [],
+  "allowCompoundWords": true,
+  "version": "0.2",
+  "ignoreWords": [
+    "Venmo",
+    "venmo",
+    "Stiner",
+    "Lige",
+    "Barbaby",
+    "paycharge"
+  ]
+} 
